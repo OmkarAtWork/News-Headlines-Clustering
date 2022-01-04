@@ -111,23 +111,30 @@ def cluster_texts(num_clusters,tfidf):
   return km
 '''
 def elbow(tfidf):
-  K=range(1,50)
+  K=range(1,15)
   wss=[]
   sscore=[]
   for k in K:
     km=KMeans(n_clusters=k,n_init=10)
     kmeans=km.fit(tfidf)
-    score = silhouette_score(tfidf, km.labels_, metric='euclidean')
-    sscore.append(score)
+    #score = silhouette_score(tfidf, km.labels_, metric='euclidean')
+    #sscore.append(score)
     wss_itr=kmeans.inertia_
     wss.append(wss_itr)
   print("WSS:\n",wss)
-  print("Silhouetter:\n",score)
- elbow(documents_vectorized)
+  #print("Silhouetter:\n",score)
+  #no_of_K=50
+  plt.plot(K,wss,'bx-')
+  plt.xlabel('no of k')
+  plt.ylabel('wss')
+  plt.show()
+
+ elbow(dtv)
  '''
 
 documents_vectorized=dtv
-kmeans12=cluster_texts(10,documents_vectorized)
+n=12
+kmeans12=cluster_texts(n,documents_vectorized)
 
 kmeans_df=pd.DataFrame()
 kmeans_df['kmeans12']=kmeans12.labels_
@@ -160,24 +167,12 @@ print(kmeans_df.head(10))
 
 #FINDING THE SIMILAR SENTENCES FROM A CLUSTER
 
-df0=kmeans_df[kmeans_df['kmeans12']==0]
-print(df0['stemmed'])
-print("\n\n")
-
-df1=kmeans_df[kmeans_df['kmeans12']==1]
-print(df1['stemmed'])
-print("\n\n")
-
-df2=kmeans_df[kmeans_df['kmeans12']==2]
-print(df2['stemmed'])
-print("\n\n")
-
-df3=kmeans_df[kmeans_df['kmeans12']==3]
-print(df3['stemmed'])
-print("\n\n")
-
-df4=kmeans_df[kmeans_df['kmeans12']==4]
-print(df4['stemmed'])
+for i in range(n):
+  print("Cluster ",i,":")
+  df_clustered=kmeans_df[kmeans_df['kmeans12']==i]
+  print(df_clustered['stemmed'])
+  print("\n\n")
+  
 
 #Common words
 common_words(kmeans_df,kmeans_df['kmeans12'],10)
